@@ -1,1 +1,3 @@
 # plataforma-ticket
+
+## React + Vite
