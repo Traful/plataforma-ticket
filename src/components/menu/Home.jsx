@@ -35,7 +35,8 @@ const Home = () => {
     const handleLogout = () => {
         // Eliminar el userId del localStorage
         localStorage.removeItem('userId');
-
+        
+        localStorage.removeItem("tikets-token"); //agrega Hans 03/08/2024
         // Redirigir al usuario a la página de inicio de sesión
         navigate('/login');
     };

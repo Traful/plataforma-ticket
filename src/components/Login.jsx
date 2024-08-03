@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Alert, Button, Card, Spinner } from 'flowbite-react';
 import { HiInformationCircle } from 'react-icons/hi';
@@ -6,12 +6,33 @@ import Logo from "../assets/img/logo_blanco.png";
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
+    const [validating, setValidating] = useState(true);
     const [email, setEmail] = useState('hansjal@gmail.com'); //useState('');
     const [password, setPassword] = useState('quilmes'); //useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
+
+    useEffect(() => {
+        const validateToken = async (valor) => {
+            try {
+                const apiUrl = import.meta.env.VITE_API_URL;
+                const response = await fetch(`${apiUrl}/user/token/validate/${valor}`);
+                const json = await response.json();
+                login(json.data);
+                navigate('/home');
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        let valor = localStorage.getItem("tikets-token");
+        if(valor) {
+            validateToken(valor).finally(setValidating(false));
+        } else {
+            setValidating(false);
+        }
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,7 +50,8 @@ const Login = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                if (data.ok) {
+                if(data.ok) {
+                    localStorage.setItem("tikets-token", data.data.jwt);
                     login(data.data);
                     navigate('/home');
                 } else {
@@ -45,6 +67,8 @@ const Login = () => {
             setIsLoading(false);
         }
     };
+
+    if(validating) return <div>...</div>;
 
     return (
         <div className='min-h-screen flex flex-col justify-center items-center bg-[#00263b]'>

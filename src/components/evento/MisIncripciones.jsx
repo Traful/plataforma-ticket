@@ -1,33 +1,32 @@
 import { useEffect, useState } from 'react';
 import { HiOutlinePrinter, HiOutlineTrash } from "react-icons/hi";
+import {  useAuth } from "./../../context/AuthContext";
 
 const MisInscripciones = () => {
+    const [loading, setLoading] = useState(true);
     const [inscripciones, setInscripciones] = useState([]);
+    const { user } = useAuth(); // Usa el hook useAuth para obtener la información del usuario
 
     useEffect(() => {
-        // Obtener userId del localStorage
-        const userId = localStorage.getItem('userId');
-        console.log(userId);
-        const apiUrl = import.meta.env.VITE_API_URL;
-
         const fetchInscripciones = async () => {
             try {
-                const response = await fetch(`${apiUrl}/inscripcionesUsuario.php?userId=${userId}`);
-                if (!response.ok) {
-                    throw new Error('Error al obtener las inscripciones del usuario');
-                }
+                const apiUrl = import.meta.env.VITE_API_URL;
+                const response = await fetch(`${apiUrl}/inscripciones/${user.id}`, {
+                    headers: {
+                        'Authorization': user.jwt,
+                    }
+                });
                 const data = await response.json();
-                setInscripciones(data.inscripciones);
+                setInscripciones(data.data);
             } catch (error) {
                 console.error('Error:', error);
-                // Manejar el error como sea necesario
             }
         };
 
-        if (userId) {
-            fetchInscripciones();
+        if (user.id) {
+            fetchInscripciones().finally(setLoading(false));
         }
-    }, []);
+    }, [user.id]);
 
     const handleReimprimir = (id) => {
         // Lógica para reimprimir la credencial
@@ -38,6 +37,8 @@ const MisInscripciones = () => {
         // Lógica para eliminar la inscripción
         alert(`Eliminando inscripción ${id}`);
     };
+
+    if(loading) return <div>Loading...</div>;
 
     return (
         <div className="p-4 bg-white rounded shadow ">

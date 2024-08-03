@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { Button, Checkbox, FileInput, Label, Select, TextInput, Card, Spinner } from 'flowbite-react';
+
 import { HiOutlineTicket, HiOutlineUser, HiOutlinePhone, HiOutlineLocationMarker, HiOutlineStar, HiOutlineExclamationCircle } from 'react-icons/hi';
 import Logo from "../../assets/img/logonegro.png";
 //import MercadoPagoLogo from "../../assets/img/mercadopago.png";
@@ -10,11 +11,12 @@ import useMpContext from '../Mp/storemp/useMpContext';
 
 const Registrar_compra = () => {
     const { state } = useMpContext();
-    const [idIncripto, setIdInscripto] = useState(null);
+    const [idPreferencia, setIdPreferencia] = useState(null);
     const archivo = useRef(null);
     const { user } = useAuth(); // Usa el hook useAuth para obtener la información del usuario
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
+        //usuario_id: '',
         //dni: '',
         //nombre: '',
         //apellido: '',
@@ -34,9 +36,9 @@ const Registrar_compra = () => {
         //team_agrupacion: '',
         //categoria_edad: '',
         //codigo_descuento: '',
-        //certificadoMedico: null,
-        //aceptaImagen: false,
-        //usuario_id: ''
+        //acepta_promocion: false
+        
+        usuario_id: '',
         dni: '18827252',
         nombre: 'Hans',
         apellido: 'Araujo',
@@ -55,10 +57,8 @@ const Registrar_compra = () => {
         talle_remera: 'XXL',
         team_agrupacion: 'Comando culo de Mandril',
         categoria_edad: '40-49',
-        codigo_descuento: '',
-        certificadoMedico: null,
-        aceptaImagen: true,
-        usuario_id: ''
+        codigo_descuento: 'desc',
+        acepta_promocion: true
     });
     const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -76,12 +76,12 @@ const Registrar_compra = () => {
         setLoading(true);
         const formDataToSend = new FormData();
         Object.keys(formData).forEach(key => {
-            if (key !== 'certificadoMedico') {
+            if (key !== 'certificado_medico') {
                 formDataToSend.append(key, formData[key]);
             }
         });
-        formDataToSend.append("certificadoMedico", archivo.current.files[0]);
-
+        formDataToSend.append("idItem", state.itemSelected.id); //Envío al back el item en el cual se inscribe
+        formDataToSend.append("certificado_medico", archivo.current.files[0]);
         try {
             const response = await fetch(`${apiUrl}/registrar/evento`, {
                 headers: {
@@ -90,12 +90,11 @@ const Registrar_compra = () => {
                 method: 'POST',
                 body: formDataToSend
             });
-
-            if (response.ok) {
-                const data = await response.json();
-                setIdInscripto(data.id);
+            const data = await response.json();
+            if(!data.ok) {
+                alert(data.msg);
             } else {
-                console.error('Error al enviar la inscripción:', response.statusText);
+                setIdPreferencia(data.data.idPreferencia);
             }
         } catch (error) {
             console.error('Error al procesar la inscripción:', error);
@@ -246,19 +245,19 @@ const Registrar_compra = () => {
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="certificadoMedico" value="Certificado Médico" />
-                                    <FileInput id="certificadoMedico" ref={archivo} />
+                                    <Label htmlFor="certificado_medico" value="Certificado Médico" />
+                                    <FileInput id="certificado_medico" ref={archivo} />
                                 </div>
 
                                 <div className="flex items-center gap-2">
-                                    <Checkbox id="aceptaImagen" checked={formData.aceptaImagen} onChange={handleInputChange} />
-                                    <Label htmlFor="aceptaImagen">
+                                    <Checkbox id="acepta_promocion" checked={formData.acepta_promocion} onChange={handleInputChange} />
+                                    <Label htmlFor="acepta_promocion">
                                         Acepto que mi imagen pueda ser utilizada para fines promocionales del evento.
                                     </Label>
                                 </div>
 
                                 <div className="flex justify-end">
-                                    <Button type="submit" color="warning" disabled={idIncripto}>
+                                    <Button type="submit" color="warning" disabled={idPreferencia}>
                                         {loading ? <Spinner size="sm" /> : "Registrar y Proceder al Pago"}
                                     </Button>
                                 </div>
@@ -285,7 +284,7 @@ const Registrar_compra = () => {
                                     <span>{`$${state.itemSelected.precio}`}</span>
                                 </div>
                             </div>
-                            <Mp idIncripto={idIncripto} />
+                            <Mp idPreferencia={idPreferencia} />
                         </Card>
                     </div>
                 </div>
