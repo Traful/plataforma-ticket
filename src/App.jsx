@@ -10,38 +10,43 @@ import RegistroExitoso from './components/menu/RegistroExistoso';
 import Footer from './components/Footer';
 import "./App.css";
 import MpData from './components/Mp/storemp/MpData';
-import MisIncripciones from './components/evento/MisIncripciones';
+import MisInscripciones from './components/evento/MisIncripciones';
+import FalloPago from './components/menu/FalloPago';
+import PendientePago from './components/menu/PendientePago';
+import Loading from './components/ui/Loading';
 
-// Componente de ruta protegida
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
   if (user.id === null) {
-    // Redirige al login si no hay usuario autenticado
     return <Navigate to="/login" replace />;
   }
   return children;
 };
 
 function AppRoutes() {
+  const { loading } = useAuth();
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <Routes>
-      {/* Rutas públicas */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/register/token/:token" element={<Bienvenida />} />
       <Route path="/registro-exitoso" element={<RegistroExitoso />} />
-
-      {/* Rutas protegidas */}
+      <Route path="/fallo-pago" element={<FalloPago />} />
+      <Route path="/pendiente-pago" element={<PendientePago />} />
       <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>}>
         <Route index element={<Evento />} />
         <Route path="registrar_compra" element={<Registrar_compra />} />
-        <Route path="mis_inscripciones" element={<MisIncripciones />} />
+        <Route path="mis_inscripciones" element={<MisInscripciones />} />
       </Route>
     </Routes>
   );
 }
 
 function App() {
+
   return (
     <AuthProvider>
       <Router>

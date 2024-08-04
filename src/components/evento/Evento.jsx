@@ -1,10 +1,12 @@
-import { Link, Route, Router, useNavigate } from "react-router-dom";
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Logo from "../../assets/img/corredor.jpg";
 import { HiOutlineClock, HiOutlineLocationMarker, HiOutlineCalendar } from "react-icons/hi";
 import useMpContext from "../Mp/storemp/useMpContext";
-import { useEffect, useState } from "react";
 import { VITE_BACK_END_URL } from "../../../config";
 import { useAuth } from "../../context/AuthContext";
+import SkeletonLoader from '../ui/Skeletor';
 
 const Evento = () => {
     const { user } = useAuth(); // Usa el hook useAuth para obtener la información del usuario
@@ -23,16 +25,16 @@ const Evento = () => {
                 setItems(json.data);
             } catch (error) {
                 console.error(error);
+            } finally {
+                setLoading(false);
             }
         };
-        getItems().finally(setLoading(false));
+        getItems();
     }, []);
-
-    if (loading) return <div>Loading...</div>;
 
     return (
         <div className="min-h-0 mr-1">
-            <div className=" mx-auto mb-1 bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className=" mx-auto mb-2 bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="relative">
                     <img src={Logo} alt="San Francisco Corre 10k" className="w-full h-64 object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
@@ -55,8 +57,9 @@ const Evento = () => {
                         <p className="text-gray-700 mb-6">Incluye: Remera del evento, número de corredor.</p>
                     </div>
                     <div className="flex justify-around items-center gap-6">
-                        {
-                            items.map(i => <TicketOption key={`i-${i.id}`} data={i} />)
+                        {loading
+                            ? [1, 2].map((_, index) => <SkeletonLoader key={index} />) // Muestra los esqueletos mientras se cargan los datos
+                            : items.map(i => <TicketOption key={`i-${i.id}`} data={i} />)
                         }
                     </div>
                 </div>

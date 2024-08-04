@@ -1,9 +1,11 @@
 import { useState, useRef } from 'react';
 import { Button, Checkbox, FileInput, Label, Select, TextInput, Card, Spinner } from 'flowbite-react';
-
 import { HiOutlineTicket, HiOutlineUser, HiOutlinePhone, HiOutlineLocationMarker, HiOutlineStar, HiOutlineExclamationCircle } from 'react-icons/hi';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import Logo from "../../assets/img/corredor.jpg";
-import { useAuth } from '../../context/AuthContext'; // Importa el hook useAuth
+import { useAuth } from '../../context/AuthContext';
 import Mp from "../Mp/Mp";
 import useMpContext from '../Mp/storemp/useMpContext';
 
@@ -58,8 +60,9 @@ const Registrar_compra = () => {
         codigo_descuento: 'desc',
         acepta_promocion: true
     });
-    const apiUrl = import.meta.env.VITE_API_URL;
 
+
+    const apiUrl = import.meta.env.VITE_API_URL;
 
     const handleInputChange = (e) => {
         const { id, value, type, checked } = e.target;
@@ -69,8 +72,75 @@ const Registrar_compra = () => {
         }));
     };
 
+    const validateForm = () => {
+        const errors = [];
+
+        if (!/^\d{7,8}$/.test(formData.dni)) {
+            errors.push("El DNI debe tener entre 7 y 8 dígitos.");
+        }
+        if (!/^[A-Za-z\s]{2,50}$/.test(formData.nombre)) {
+            errors.push("El nombre debe contener solo letras y espacios, entre 2 y 50 caracteres.");
+        }
+        if (!/^[A-Za-z\s]{2,50}$/.test(formData.apellido)) {
+            errors.push("El apellido debe contener solo letras y espacios, entre 2 y 50 caracteres.");
+        }
+        if (!formData.fecha_nacimiento) {
+            errors.push("La fecha de nacimiento es requerida.");
+        }
+        if (!formData.genero) {
+            errors.push("El género es requerido.");
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            errors.push("El email no es válido.");
+        }
+        if (!/^\d{10}$/.test(formData.telefono)) {
+            errors.push("El teléfono debe contener 10 dígitos.");
+        }
+        if (!formData.domicilio) {
+            errors.push("El domicilio es requerido.");
+        }
+        if (!formData.ciudad) {
+            errors.push("La ciudad es requerida.");
+        }
+        if (!formData.provincia) {
+            errors.push("La provincia es requerida.");
+        }
+        if (!formData.pais) {
+            errors.push("El país es requerido.");
+        }
+        if (!/^\d{4,5}$/.test(formData.codigo_postal)) {
+            errors.push("El código postal debe tener entre 4 y 5 dígitos.");
+        }
+        if (!formData.contacto_emergencia_nombre) {
+            errors.push("El nombre del contacto de emergencia es requerido.");
+        }
+        if (!formData.contacto_emergencia_apellido) {
+            errors.push("El apellido del contacto de emergencia es requerido.");
+        }
+        if (!/^\d{10}$/.test(formData.contacto_emergencia_telefono)) {
+            errors.push("El teléfono del contacto de emergencia debe contener 10 dígitos.");
+        }
+        if (!formData.talle_remera) {
+            errors.push("El talle de remera es requerido.");
+        }
+        if (!formData.categoria_edad) {
+            errors.push("La categoría de edad es requerida.");
+        }
+        if (!archivo.current.files[0]) {
+            errors.push("El certificado médico es requerido.");
+        }
+
+        return errors;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const errors = validateForm();
+        if (errors.length > 0) {
+            errors.forEach(error => toast.error(error));
+            return;
+        }
+
         setLoading(true);
         const formDataToSend = new FormData();
         Object.keys(formData).forEach(key => {
@@ -78,8 +148,9 @@ const Registrar_compra = () => {
                 formDataToSend.append(key, formData[key]);
             }
         });
-        formDataToSend.append("idItem", state.itemSelected.id); //Envío al back el item en el cual se inscribe
+        formDataToSend.append("idItem", state.itemSelected.id);
         formDataToSend.append("certificado_medico", archivo.current.files[0]);
+
         try {
             const response = await fetch(`${apiUrl}/registrar/evento`, {
                 headers: {
@@ -90,12 +161,14 @@ const Registrar_compra = () => {
             });
             const data = await response.json();
             if (!data.ok) {
-                alert(data.msg);
+                toast.error(data.msg);
             } else {
                 setIdPreferencia(data.data.idPreferencia);
+                toast.success("Registro exitoso. Proceda al pago.");
             }
         } catch (error) {
             console.error('Error al procesar la inscripción:', error);
+            toast.error("Hubo un error al procesar la inscripción. Por favor, intente de nuevo.");
         } finally {
             setLoading(false);
         }
@@ -103,7 +176,8 @@ const Registrar_compra = () => {
 
     return (
         <div className="min-h-screen ">
-            <div className=" mx-auto mr-1 mb-1 bg-white rounded-lg shadow-lg overflow-hidden">
+            <ToastContainer position="top-right" autoClose={5000} />
+            <div className=" mx-auto mr-1 mb-2 bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="relative">
                     <img src={Logo} alt="San Francisco Corre 10k" className="w-full h-64 object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>

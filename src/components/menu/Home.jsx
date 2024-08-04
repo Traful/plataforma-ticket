@@ -11,8 +11,8 @@ const Home = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem('userId');
         localStorage.removeItem("tikets-token");
+        user.logout();
         navigate('/login');
     };
 
@@ -55,7 +55,7 @@ const Home = () => {
                             </Sidebar.Item>
                         </Sidebar.ItemGroup>
                         <Sidebar.ItemGroup>
-                            <Sidebar.Item icon={HiOutlineUserCircle} onClick={handleLogout}>
+                            <Sidebar.Item icon={HiOutlineUserCircle} as={Link} onClick={handleLogout}>
                                 Cerrar Sesión
                             </Sidebar.Item>
                         </Sidebar.ItemGroup>

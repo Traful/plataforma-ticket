@@ -4,6 +4,8 @@ import { Alert, Button, Card, Spinner } from 'flowbite-react';
 import { HiInformationCircle } from 'react-icons/hi';
 import Logo from "../assets/img/logo_blanco.png";
 import { useAuth } from '../context/AuthContext';
+import Loading from './ui/Loading';
+
 
 const Login = () => {
     const [validating, setValidating] = useState(true);
@@ -20,19 +22,21 @@ const Login = () => {
                 const apiUrl = import.meta.env.VITE_API_URL;
                 const response = await fetch(`${apiUrl}/user/token/validate/${valor}`);
                 const json = await response.json();
-                login(json.data);
-                navigate('/');
+                if (json.data) {
+                    login(json.data);
+                    navigate('/');
+                }
             } catch (error) {
                 console.log(error);
             }
         };
-        let valor = localStorage.getItem("tikets-token");
+        const valor = localStorage.getItem("tikets-token");
         if (valor) {
-            validateToken(valor).finally(setValidating(false));
+            validateToken(valor).finally(() => setValidating(false));
         } else {
             setValidating(false);
         }
-    }, []);
+    }, [login, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -68,10 +72,10 @@ const Login = () => {
         }
     };
 
-    if (validating) return <div>...</div>;
+    if (validating) return <Loading />;
 
     return (
-        <div className='min-h-screen flex flex-col justify-center items-center '>
+        <div className='min-h-screen flex flex-col justify-center items-center'>
             <div className="w-full max-w-screen-md p-6 mb-8">
                 <img src={Logo} alt="Logo" className="mx-auto h-20 object-contain" />
             </div>
