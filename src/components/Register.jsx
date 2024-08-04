@@ -55,7 +55,7 @@ const Register = () => {
     };
 
     return (
-        <div className='min-h-screen flex flex-col justify-center items-center bg-[#00263b]'>
+        <div className='min-h-screen flex flex-col justify-center items-center'>
             <div className="w-full max-w-screen-md p-6 mb-8">
                 <img src={Logo} alt="Logo" className="mx-auto h-20 object-contain" />
             </div>
@@ -86,7 +86,7 @@ const Register = () => {
                             <div>
                                 <label htmlFor="lastname" className="block text-sm font-medium text-[#00263b] mb-1">Apellido</label>
                                 <input
-                                    type="tel"
+                                    type="text"
                                     id="lastname"
                                     name='lastname'
                                     value={dataUser.lastname}

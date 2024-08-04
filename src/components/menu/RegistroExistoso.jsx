@@ -5,7 +5,7 @@ import Logo from "../../assets/img/logo_blanco.png";
 
 const RegistroExitoso = () => {
     return (
-        <div className='min-h-screen flex flex-col justify-center items-center bg-[#00263b]'>
+        <div className='min-h-screen flex flex-col justify-center items-center'>
             <div className="w-full max-w-screen-md p-6 mb-8">
                 <img src={Logo} alt="Logo" className="mx-auto h-20 object-contain" />
             </div>

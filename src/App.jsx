@@ -10,6 +10,7 @@ import RegistroExitoso from './components/menu/RegistroExistoso';
 import Footer from './components/Footer';
 import "./App.css";
 import MpData from './components/Mp/storemp/MpData';
+import MisIncripciones from './components/evento/MisIncripciones';
 
 // Componente de ruta protegida
 const ProtectedRoute = ({ children }) => {
@@ -31,15 +32,14 @@ function AppRoutes() {
       <Route path="/registro-exitoso" element={<RegistroExitoso />} />
 
       {/* Rutas protegidas */}
-      <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-      <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-      <Route path="/evento" element={<ProtectedRoute><Evento /></ProtectedRoute>} />
-      <Route path="/registrar_compra" element={<ProtectedRoute><Registrar_compra /></ProtectedRoute>} />
+      <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>}>
+        <Route index element={<Evento />} />
+        <Route path="registrar_compra" element={<Registrar_compra />} />
+        <Route path="mis_inscripciones" element={<MisIncripciones />} />
+      </Route>
     </Routes>
   );
 }
-
-//<Router basename="/ticket">
 
 function App() {
   return (

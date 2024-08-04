@@ -33,7 +33,7 @@ const Bienvenida = () => {
 
     if (cargando) {
         return (
-            <div className="min-h-screen flex flex-col justify-center items-center bg-[#00263b]">
+            <div className="min-h-screen flex flex-col justify-center items-center">
                 <Spinner size="xl" color="warning" />
                 <p className="mt-4 text-[#e7ac2a]">Verificando su cuenta...</p>
             </div>
@@ -41,7 +41,7 @@ const Bienvenida = () => {
     }
 
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center bg-[#00263b]">
+        <div className="min-h-screen flex flex-col justify-center items-center">
             <div className="w-full max-w-screen-md p-6 mb-8">
                 <img src={Logo} alt="Logo" className="mx-auto h-20 object-contain" />
             </div>

@@ -21,13 +21,13 @@ const Login = () => {
                 const response = await fetch(`${apiUrl}/user/token/validate/${valor}`);
                 const json = await response.json();
                 login(json.data);
-                navigate('/home');
+                navigate('/');
             } catch (error) {
                 console.log(error);
             }
         };
         let valor = localStorage.getItem("tikets-token");
-        if(valor) {
+        if (valor) {
             validateToken(valor).finally(setValidating(false));
         } else {
             setValidating(false);
@@ -50,10 +50,10 @@ const Login = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                if(data.ok) {
+                if (data.ok) {
                     localStorage.setItem("tikets-token", data.data.jwt);
                     login(data.data);
-                    navigate('/home');
+                    navigate('/');
                 } else {
                     setError(data.msg || 'Error en el inicio de sesión. Por favor, verifica tus credenciales.');
                 }
@@ -68,10 +68,10 @@ const Login = () => {
         }
     };
 
-    if(validating) return <div>...</div>;
+    if (validating) return <div>...</div>;
 
     return (
-        <div className='min-h-screen flex flex-col justify-center items-center bg-[#00263b]'>
+        <div className='min-h-screen flex flex-col justify-center items-center '>
             <div className="w-full max-w-screen-md p-6 mb-8">
                 <img src={Logo} alt="Logo" className="mx-auto h-20 object-contain" />
             </div>
