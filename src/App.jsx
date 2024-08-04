@@ -14,6 +14,7 @@ import MisInscripciones from './components/evento/MisIncripciones';
 import FalloPago from './components/menu/FalloPago';
 import PendientePago from './components/menu/PendientePago';
 import Loading from './components/ui/Loading';
+import InscripcionExitosa from './components/menu/IncripcionExito';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -39,6 +40,8 @@ function AppRoutes() {
       <Route path="/registro-exitoso" element={<RegistroExitoso />} />
       <Route path="/fallo-pago" element={<FalloPago />} />
       <Route path="/pendiente-pago" element={<PendientePago />} />
+      <Route path="/inscripcion-exito" element={<InscripcionExitosa />} />
+
 
       <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>}>
         <Route index element={<Evento />} />

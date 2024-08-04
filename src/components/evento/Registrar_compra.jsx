@@ -44,7 +44,7 @@ const Registrar_compra = () => {
         apellido: 'Araujo',
         fecha_nacimiento: '1978-03-14',
         genero: 'Masculino',
-        email: 'hansjal@gmail.com',
+        email: 'federiconj@gmail.com',
         telefono: '2657229947',
         domicilio: 'Ate II Mz: 4 Dto: 273',
         ciudad: 'Villa Mercedes',

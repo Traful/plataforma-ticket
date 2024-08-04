@@ -9,8 +9,8 @@ import Loading from './ui/Loading';
 
 const Login = () => {
     const [validating, setValidating] = useState(true);
-    const [email, setEmail] = useState('hansjal@gmail.com'); //useState('');
-    const [password, setPassword] = useState('quilmes'); //useState('');
+    const [email, setEmail] = useState('federiconj@gmail.com'); //useState('');
+    const [password, setPassword] = useState('fede'); //useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
