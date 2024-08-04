@@ -39,7 +39,7 @@ const Home = () => {
                     )}
                 </Navbar>
             </div>
-            <div className="hidden min-h-screen md:flex">
+            <div className="hidden min-h-screen md:flex mt-1 ml-1">
                 <Sidebar className="sticky top-0 w-72 mr-1">
                     <div className="flex items-center justify-center mb-5 ">
                         <img src={Logo} alt="Logo" className="w-90" />

@@ -2,9 +2,7 @@ import { useState, useRef } from 'react';
 import { Button, Checkbox, FileInput, Label, Select, TextInput, Card, Spinner } from 'flowbite-react';
 
 import { HiOutlineTicket, HiOutlineUser, HiOutlinePhone, HiOutlineLocationMarker, HiOutlineStar, HiOutlineExclamationCircle } from 'react-icons/hi';
-import Logo from "../../assets/img/logonegro.png";
-//import MercadoPagoLogo from "../../assets/img/mercadopago.png";
-import axios from "axios";
+import Logo from "../../assets/img/corredor.jpg";
 import { useAuth } from '../../context/AuthContext'; // Importa el hook useAuth
 import Mp from "../Mp/Mp";
 import useMpContext from '../Mp/storemp/useMpContext';
@@ -105,15 +103,14 @@ const Registrar_compra = () => {
 
     return (
         <div className="min-h-screen ">
-            <Card className="mb-2">
-                <div className="flex justify-center mb-4">
-                    <img src={Logo} alt="Event Logo" className="h-16" />
+            <div className=" mx-auto mr-1 mb-1 bg-white rounded-lg shadow-lg overflow-hidden">
+                <div className="relative">
+                    <img src={Logo} alt="San Francisco Corre 10k" className="w-full h-64 object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
+                    <h1 className="absolute bottom-4 left-4 text-4xl font-bold text-white">San Francisco Corre 10k</h1>
                 </div>
-                <h1 className="text-3xl font-bold text-center text-[#00263b]">Inscripción - San Francisco 10K</h1>
-                {user && <p className="text-center text-[#4baccc]">Bienvenido, {user.firstname}</p>}
-            </Card>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-2">
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 mb-2">
                 <div className="lg:col-span-2">
                     <Card>
                         <form onSubmit={handleSubmit} className="space-y-6">
@@ -264,7 +261,7 @@ const Registrar_compra = () => {
                     </Card>
                 </div>
 
-                <div className="lg:col-span-1">
+                <div className="lg:col-span-1 mr-1">
                     <Card className="sticky top-4">
                         <h2 className="text-xl font-bold mb-4 text-[#00263b] flex items-center">
                             <HiOutlineTicket className="mr-2" /> Resumen de Pago
@@ -278,6 +275,7 @@ const Registrar_compra = () => {
                                 <span className="font-medium">Cantidad:</span>
                                 <span>{state.itemSelected.cantidad}</span>
                             </div>
+                            <hr />
                             <div className="flex justify-between font-bold text-lg">
                                 <span>Total:</span>
                                 <span>{`$${state.itemSelected.precio}`}</span>

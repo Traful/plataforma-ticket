@@ -31,14 +31,15 @@ const Evento = () => {
     if (loading) return <div>Loading...</div>;
 
     return (
-        <div className="min-h-0">
-            <div className=" mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="min-h-0 mr-1">
+            <div className=" mx-auto mb-1 bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="relative">
                     <img src={Logo} alt="San Francisco Corre 10k" className="w-full h-64 object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
                     <h1 className="absolute bottom-4 left-4 text-4xl font-bold text-white">San Francisco Corre 10k</h1>
                 </div>
-
+            </div>
+            <div className=" mx-auto mb-1 bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="p-6 text-center">
                     <p className="text-gray-700 mb-6">Prepárate para la 1ra Edición de San Francisco Corre, organizado por el Municipio de San Francisco.</p>
 
