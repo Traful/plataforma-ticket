@@ -55,7 +55,7 @@ const Register = () => {
     };
 
     return (
-        <div className='min-h-screen flex flex-col justify-center items-center'>
+        <div className='min-h-screen mb-2 flex flex-col justify-center items-center'>
             <div className="w-full max-w-screen-md p-6 mb-8">
                 <img src={Logo} alt="Logo" className="mx-auto h-20 object-contain" />
             </div>

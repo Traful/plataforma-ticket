@@ -55,7 +55,7 @@ const Home = () => {
                             </Sidebar.Item>
                         </Sidebar.ItemGroup>
                         <Sidebar.ItemGroup>
-                            <Sidebar.Item icon={HiOutlineUserCircle} as={Link} onClick={handleLogout}>
+                            <Sidebar.Item icon={HiOutlineUserCircle} as={Link}onClick={handleLogout}>
                                 Cerrar Sesión
                             </Sidebar.Item>
                         </Sidebar.ItemGroup>

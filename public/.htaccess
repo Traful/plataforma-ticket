@@ -1,5 +1,13 @@
 RewriteEngine On
-#RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-RewriteCond %{REQUEST_FILENAME} !-f
-#RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.html [QSA,L]
+
+# Si la solicitud es para un archivo existente, no hagas nada
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Redirige todas las solicitudes que no sean para archivos existentes a /ticket/index.html
+RewriteRule ^ticket/(.*)$ /ticket/index.html [L]
+
+# Para solicitudes fuera de /ticket/, redirige a /ticket/
+RewriteRule ^$ /ticket/ [R=301,L]
+RewriteRule ^((?!ticket/).*)$ /ticket/$1 [R=301,L]

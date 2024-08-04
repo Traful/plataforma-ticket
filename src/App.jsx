@@ -16,8 +16,11 @@ import PendientePago from './components/menu/PendientePago';
 import Loading from './components/ui/Loading';
 
 const ProtectedRoute = ({ children }) => {
-  const { user } = useAuth();
-  if (user.id === null) {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return <Loading />;
+  }
+  if (!user || user.id === null) {
     return <Navigate to="/login" replace />;
   }
   return children;
@@ -36,6 +39,7 @@ function AppRoutes() {
       <Route path="/registro-exitoso" element={<RegistroExitoso />} />
       <Route path="/fallo-pago" element={<FalloPago />} />
       <Route path="/pendiente-pago" element={<PendientePago />} />
+
       <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>}>
         <Route index element={<Evento />} />
         <Route path="registrar_compra" element={<Registrar_compra />} />
@@ -46,10 +50,9 @@ function AppRoutes() {
 }
 
 function App() {
-
   return (
     <AuthProvider>
-      <Router>
+      <Router basename='/ticket'>
         <MpData>
           <AppRoutes />
         </MpData>

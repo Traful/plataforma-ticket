@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from "./../../context/AuthContext";
-import { HiOutlineTicket } from "react-icons/hi";
+import { HiOutlineTicket, HiOutlineInformationCircle } from "react-icons/hi";
 import SkeletonLoader from '../ui/Skeletor';
 
 const MisInscripciones = () => {
     const [loading, setLoading] = useState(true);
     const [inscripciones, setInscripciones] = useState([]);
-    const { user } = useAuth(); // Usa el hook useAuth para obtener la información del usuario
+    const { user } = useAuth();
 
     useEffect(() => {
         const fetchInscripciones = async () => {
@@ -46,7 +46,7 @@ const MisInscripciones = () => {
                         </li>
                     ))}
                 </ul>
-            ) : (
+            ) : inscripciones.length > 0 ? (
                 <ul className="space-y-4">
                     {inscripciones.map((inscripcion) => (
                         <li key={inscripcion.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border rounded-lg bg-gray-50 shadow-sm hover:bg-gray-100 transition duration-300 ease-in-out">
@@ -58,6 +58,14 @@ const MisInscripciones = () => {
                         </li>
                     ))}
                 </ul>
+            ) : (
+                <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg">
+                    <HiOutlineInformationCircle className="text-blue-500 w-16 h-16 mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Aún no tienes inscripciones</h3>
+                    <p className="text-gray-600 text-center">
+                        Cuando te inscribas en un evento, tus inscripciones aparecerán aquí.
+                    </p>
+                </div>
             )}
         </div>
     );
