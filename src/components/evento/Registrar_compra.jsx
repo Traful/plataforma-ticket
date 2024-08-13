@@ -1,67 +1,46 @@
 import { useState, useRef } from 'react';
 import { Button, Checkbox, FileInput, Label, Select, TextInput, Card, Spinner } from 'flowbite-react';
 import { HiOutlineTicket, HiOutlineUser, HiOutlinePhone, HiOutlineLocationMarker, HiOutlineStar, HiOutlineExclamationCircle } from 'react-icons/hi';
+import { FaTshirt } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import Logo from "../../assets/img/corredor.jpg";
 import { useAuth } from '../../context/AuthContext';
 import Mp from "../Mp/Mp";
 import useMpContext from '../Mp/storemp/useMpContext';
 
 const Registrar_compra = () => {
+    const tallesImageUrl = "https://vivisanfrancisco.com/ticket/assets/images/talles.jpg";
+    const [showSizeGuide, setShowSizeGuide] = useState(false);
+
     const { state } = useMpContext();
     const [idPreferencia, setIdPreferencia] = useState(null);
     const archivo = useRef(null);
-    const { user } = useAuth(); // Usa el hook useAuth para obtener la información del usuario
+    const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        //usuario_id: '',
-        //dni: '',
-        //nombre: '',
-        //apellido: '',
-        //fecha_nacimiento: '',
-        //genero: '',
-        //email: '',
-        //telefono: '',
-        //domicilio: '',
-        //ciudad: '',
-        //provincia: '',
-        //pais: '',
-        //codigo_postal: '',
-        //contacto_emergencia_nombre: '',
-        //contacto_emergencia_apellido: '',
-        //contacto_emergencia_telefono: '',
-        //talle_remera: '',
-        //team_agrupacion: '',
-        //categoria_edad: '',
-        //codigo_descuento: '',
-        //acepta_promocion: false
-
         usuario_id: '',
-        dni: '18827252',
-        nombre: 'Hans',
-        apellido: 'Araujo',
-        fecha_nacimiento: '1978-03-14',
-        genero: 'Masculino',
-        email: 'federiconj@gmail.com',
-        telefono: '2657229947',
-        domicilio: 'Ate II Mz: 4 Dto: 273',
-        ciudad: 'Villa Mercedes',
-        provincia: 'San Luis',
-        pais: 'Argentina',
-        codigo_postal: '5730',
-        contacto_emergencia_nombre: 'Pepe',
-        contacto_emergencia_apellido: 'Soriano',
-        contacto_emergencia_telefono: '2657229947',
-        talle_remera: 'XXL',
-        team_agrupacion: 'Comando culo de Mandril',
-        categoria_edad: '40-49',
-        codigo_descuento: 'desc',
-        acepta_promocion: true
+        dni: '',
+        nombre: '',
+        apellido: '',
+        fecha_nacimiento: '',
+        genero: '',
+        email: '',
+        telefono: '',
+        domicilio: '',
+        ciudad: '',
+        provincia: '',
+        pais: '',
+        codigo_postal: '',
+        contacto_emergencia_nombre: '',
+        contacto_emergencia_apellido: '',
+        contacto_emergencia_telefono: '',
+        talle_remera: '',
+        team_agrupacion: '',
+        categoria_edad: '',
+        codigo_descuento: '',
+        acepta_promocion: false
     });
-
-
     const apiUrl = import.meta.env.VITE_API_URL;
 
     const handleInputChange = (e) => {
@@ -70,6 +49,23 @@ const Registrar_compra = () => {
             ...prevData,
             [id]: type === 'checkbox' ? checked : value
         }));
+    };
+
+    const validateFile = (file) => {
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg'];
+        const maxSize = 7 * 1024 * 1024; // 7 MB in bytes
+
+        if (!allowedTypes.includes(file.type)) {
+            toast.error("El archivo debe ser PDF o JPG.");
+            return false;
+        }
+
+        if (file.size > maxSize) {
+            toast.error("El archivo debe ser menor a 7 MB.");
+            return false;
+        }
+
+        return true;
     };
 
     const validateForm = () => {
@@ -128,6 +124,8 @@ const Registrar_compra = () => {
         }
         if (!archivo.current.files[0]) {
             errors.push("El certificado médico es requerido.");
+        } else if (!validateFile(archivo.current.files[0])) {
+            errors.push("El certificado médico no cumple con los requisitos.");
         }
 
         return errors;
@@ -179,9 +177,9 @@ const Registrar_compra = () => {
             <ToastContainer position="top-right" autoClose={5000} />
             <div className=" mx-auto mr-1 mb-2 bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="relative">
-                    <img src={Logo} alt="San Francisco Corre 10k" className="w-full h-64 object-cover" />
+                    <img src={Logo} alt="10K Del Maestro" className="w-full h-64 object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
-                    <h1 className="absolute bottom-4 left-4 text-4xl font-bold text-white">San Francisco Corre 10k</h1>
+                    <h1 className="absolute bottom-4 left-4 text-4xl font-bold text-white">10K Del Maestro</h1>
                 </div>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 mb-2">
@@ -281,8 +279,21 @@ const Registrar_compra = () => {
                                 <HiOutlineStar className="mr-2" /> Información Adicional
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <Label htmlFor="talle_remera" value="Talle de Remera" />
+                                <div className="relative">
+                                    <Label htmlFor="talle_remera" className="flex items-center mb-2">
+                                        Talle de Remera
+                                        <FaTshirt
+                                            className="ml-2 text-gray-500 cursor-pointer"
+                                            onMouseEnter={() => setShowSizeGuide(true)}
+                                            onMouseLeave={() => setShowSizeGuide(false)}
+                                            onClick={() => setShowSizeGuide(!showSizeGuide)}
+                                        />
+                                    </Label>
+                                    {showSizeGuide && (
+                                        <div className="absolute z-10 p-2 bg-white border rounded shadow-lg">
+                                            <img src={tallesImageUrl} alt="Guía de talles" className="max-w-xs" />
+                                        </div>
+                                    )}
                                     <Select id="talle_remera" required value={formData.talle_remera} onChange={handleInputChange}>
                                         <option value="">Selecciona</option>
                                         <option value="XS">XS</option>
@@ -301,11 +312,20 @@ const Registrar_compra = () => {
                                     <Label htmlFor="categoria_edad" value="Categoría de Edad" />
                                     <Select id="categoria_edad" required value={formData.categoria_edad} onChange={handleInputChange}>
                                         <option value="">Selecciona</option>
-                                        <option value="18-29">18-29</option>
-                                        <option value="30-39">30-39</option>
-                                        <option value="40-49">40-49</option>
-                                        <option value="50-59">50-59</option>
-                                        <option value="60+">60+</option>
+                                        <option value="15-19">15-19</option>
+                                        <option value="20-24">20-24</option>
+                                        <option value="25-29">25-29</option>
+                                        <option value="30-34">30-34</option>
+                                        <option value="35-39">35-39</option>
+                                        <option value="40-44">40-44</option>
+                                        <option value="45-49">45-49</option>
+                                        <option value="50-54">50-54</option>
+                                        <option value="55-59">55-59</option>
+                                        <option value="60-64">60-64</option>
+                                        <option value="65-69">65-69</option>
+                                        <option value="70-74">70-74</option>
+                                        <option value="75-79">75-79</option>
+                                        <option value="80+">80+</option>
                                     </Select>
                                 </div>
                                 <div>

@@ -1,10 +1,37 @@
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Card, Button } from 'flowbite-react';
 import { HiOutlineExclamationCircle, HiOutlineLocationMarker, HiOutlineClock } from 'react-icons/hi';
 import { FaRunning, FaWater, FaTshirt, FaApple } from 'react-icons/fa';
 import Logo from "../../assets/img/logo_blanco.png";
+import { useEffect } from 'react';
+import { VITE_BACK_END_URL } from '../../../config';
 
 const InscripcionExitosa = () => {
+    const [searchParams] = useSearchParams();
+
+    useEffect(() => {
+        const updatePago = async () => {
+            try {
+                const paramsString = searchParams.toString();
+                console.log(paramsString);
+                /*
+                    Los items de venta que se crean en MP
+                    deben redirigir su succes a https://vivisanfrancisco.com/ticket/inscripcion-exito
+                */
+                console.log(`${VITE_BACK_END_URL}mp/success?${paramsString}`);
+
+                const response = await fetch(`${VITE_BACK_END_URL}mp/success?${paramsString}`);
+                const json = await response.json();
+                console.log(json);
+
+            } catch (error) {
+                console.log(error);
+
+            }
+        };
+        updatePago();
+    }, [searchParams])
+
     return (
         <div className='min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-[#e7ac2a] to-[#4baccc] p-4'>
             <div className="w-full max-w-screen-md p-6 mb-8">
@@ -23,7 +50,7 @@ const InscripcionExitosa = () => {
                     <div className="flex items-center space-x-2">
                         <HiOutlineClock className="w-6 h-6 text-[#4baccc]" />
                         <p className="font-bold text-[#4baccc] text-center text-xl">
-                            1 de Agosto de 2024 - 08:00hs
+                            8 de Septiembre de 2024
                         </p>
                     </div>
                     <div className="flex items-center space-x-2">

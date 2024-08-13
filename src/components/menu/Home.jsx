@@ -27,13 +27,13 @@ const Home = () => {
                 </Navbar>
                 {isOpen && (
                     <div className="p-4 bg-white shadow-md w-full">
-                        <Link to="/" className="flex items-center w-full p-2 text-gray-700">
+                        <Link to="/" className="flex items-center w-full p-2 text-gray-700 hover:bg-gray-200">
                             <HiOutlineTicket className="mr-2" /> Nueva Inscripción
                         </Link>
-                        <Link to="/mis_inscripciones" className="flex items-center w-full p-2 text-gray-700">
+                        <Link to="/mis_inscripciones" className="flex items-center w-full p-2 text-gray-700 hover:bg-gray-200">
                             <HiSearchCircle className="mr-2" /> Mis Inscripciones
                         </Link>
-                        <button className="flex items-center w-full p-2 text-gray-700" onClick={handleLogout}>
+                        <button className="flex items-center w-full p-2 text-gray-700 hover:bg-gray-200" onClick={handleLogout}>
                             <HiOutlineUserCircle className="mr-2" /> Cerrar Sesión
                         </button>
                     </div>
@@ -63,7 +63,7 @@ const Home = () => {
                         </Sidebar.Items>
                     </Sidebar>
                 </div>
-                <div className="flex-1 p-4 overflow-auto">
+                <div className="flex-1 p-4">
                     <Outlet />
                 </div>
             </div>

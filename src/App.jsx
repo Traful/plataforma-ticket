@@ -15,6 +15,7 @@ import FalloPago from './components/menu/FalloPago';
 import PendientePago from './components/menu/PendientePago';
 import Loading from './components/ui/Loading';
 import InscripcionExitosa from './components/menu/IncripcionExito';
+import NotFound404 from './components/NotFound404'; // Asegúrate de crear este componente
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -42,12 +43,14 @@ function AppRoutes() {
       <Route path="/pendiente-pago" element={<PendientePago />} />
       <Route path="/inscripcion-exito" element={<InscripcionExitosa />} />
 
-
       <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>}>
         <Route index element={<Evento />} />
         <Route path="registrar_compra" element={<Registrar_compra />} />
         <Route path="mis_inscripciones" element={<MisInscripciones />} />
       </Route>
+
+      {/* Ruta comodín para manejar rutas no conocidas */}
+      <Route path="*" element={<NotFound404 />} />
     </Routes>
   );
 }

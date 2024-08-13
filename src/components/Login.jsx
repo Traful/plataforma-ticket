@@ -3,14 +3,14 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Alert, Button, Card, Spinner } from 'flowbite-react';
 import { HiInformationCircle } from 'react-icons/hi';
 import Logo from "../assets/img/logo_blanco.png";
+import EventoBanner from "../assets/img/corredor.jpg"; // Asegúrate de tener esta imagen
 import { useAuth } from '../context/AuthContext';
 import Loading from './ui/Loading';
 
-
 const Login = () => {
     const [validating, setValidating] = useState(true);
-    const [email, setEmail] = useState('federiconj@gmail.com'); //useState('');
-    const [password, setPassword] = useState('fede'); //useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
@@ -75,46 +75,73 @@ const Login = () => {
     if (validating) return <Loading />;
 
     return (
-        <div className='min-h-screen flex flex-col justify-center items-center'>
-            <div className="w-full max-w-screen-md p-6 mb-8">
-                <img src={Logo} alt="Logo" className="mx-auto h-20 object-contain" />
+        <div className='min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-[#00263b] to-[#004b7a]'>
+            <div className="w-full max-w-6xl p-6 mb-2">
+                <img src={Logo} alt="Logo" className="mx-auto h-20 object-contain mb-2" />
+                <h1 className="text-4xl font-bold text-center text-white mb-2">10K del Maestro</h1>
+                <p className="text-xl text-center text-[#e7ac2a] mb-2">¡Sumate a la carrera más esperada del año!</p>
             </div>
-            <Card className="w-full max-w-md border-t-4 border-[#e7ac2a]">
-                <h2 className="text-3xl font-bold text-center mb-6 text-[#00263b]">Iniciar Sesión</h2>
-                {error && (
-                    <Alert color="failure" icon={HiInformationCircle} className="mb-4">
-                        <span className="font-medium">Error!</span> {error}
-                    </Alert>
-                )}
-                <form className="space-y-6" onSubmit={handleSubmit}>
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-[#00263b] mb-1">Correo Electrónico</label>
-                        <input
-                            type="email"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="block w-full px-3 py-2 bg-white border border-[#4baccc] rounded-md shadow-sm focus:outline-none focus:ring-[#e7ac2a] focus:border-[#e7ac2a]"
-                            placeholder="Correo Electrónico"
-                            required
-                        />
+            
+            <div className="w-full max-w-6xl flex flex-col mb-6 md:flex-row gap-8 px-4">
+                <Card className="w-full md:w-1/2 border-t-4 border-[#e7ac2a] bg-white/90 mb-2">
+                    <img src={EventoBanner} alt="10K del Maestro" className="w-full h-64 object-cover rounded-t-lg" />
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold text-[#00263b] mb-4">¿Listo para el desafío?</h2>
+                        <p className="text-[#00263b] mb-4">
+                            Para inscribirte en la carrera 10K del Maestro, necesitás crear una cuenta. 
+                            Si ya tenés una, iniciá sesión para completar tu inscripción.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <Link to="/register" className="w-full">
+                                <Button className="w-full bg-[#e7ac2a] hover:bg-[#c29525] text-[#00263b] font-bold">
+                                    Crear Cuenta
+                                </Button>
+                            </Link>
+                            <Button 
+                                onClick={() => document.getElementById('email').focus()} 
+                                className="w-full bg-[#4baccc] hover:bg-[#3a91ae] text-white font-bold"
+                            >
+                                Ya tengo cuenta
+                            </Button>
+                        </div>
                     </div>
-                    <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-[#00263b] mb-1">Contraseña</label>
-                        <input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="block w-full px-3 py-2 bg-white border border-[#4baccc] rounded-md shadow-sm focus:outline-none focus:ring-[#e7ac2a] focus:border-[#e7ac2a]"
-                            placeholder="Contraseña"
-                            required
-                        />
-                    </div>
-                    <div className="flex flex-col sm:flex-row items-center justify-between pt-4 space-y-4 sm:space-y-0">
+                </Card>
+
+                <Card className="w-full md:w-1/2 border-t-4 border-[#4baccc] bg-white/90 mb-2">
+                    <h2 className="text-3xl font-bold text-center mb-6 text-[#00263b]">Iniciar Sesión</h2>
+                    {error && (
+                        <Alert color="failure" icon={HiInformationCircle} className="mb-4">
+                            <span className="font-medium">Error!</span> {error}
+                        </Alert>
+                    )}
+                    <form className="space-y-6" onSubmit={handleSubmit}>
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-[#00263b] mb-1">Correo Electrónico</label>
+                            <input
+                                type="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="block w-full px-3 py-2 bg-white border border-[#4baccc] rounded-md shadow-sm focus:outline-none focus:ring-[#e7ac2a] focus:border-[#e7ac2a]"
+                                placeholder="tu@email.com"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-medium text-[#00263b] mb-1">Contraseña</label>
+                            <input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="block w-full px-3 py-2 bg-white border border-[#4baccc] rounded-md shadow-sm focus:outline-none focus:ring-[#e7ac2a] focus:border-[#e7ac2a]"
+                                placeholder="Tu contraseña"
+                                required
+                            />
+                        </div>
                         <Button
                             type="submit"
-                            className="w-full sm:w-auto bg-[#e7ac2a] hover:bg-[#c29525] text-[#00263b] font-bold"
+                            className="w-full bg-[#e7ac2a] hover:bg-[#c29525] text-[#00263b] font-bold"
                             disabled={isLoading}
                         >
                             {isLoading ? (
@@ -126,12 +153,9 @@ const Login = () => {
                                 'Iniciar Sesión'
                             )}
                         </Button>
-                        <Link to="/register" className="text-sm font-medium text-[#4baccc] hover:text-[#e7ac2a]">
-                            ¿No tienes una cuenta? Regístrate
-                        </Link>
-                    </div>
-                </form>
-            </Card>
+                    </form>
+                </Card>
+            </div>
         </div>
     );
 };
