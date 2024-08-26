@@ -62,7 +62,7 @@ const Evento = () => {
                     <div className="grid md:grid-cols-3 gap-6 mb-8">
                         <EventInfo icon={HiOutlineCalendar} title="Fecha y Hora" info="8 de Septiembre de 2024 - 10:00hs." />
                         <EventInfo icon={HiOutlineLocationMarker} title="Ubicación" info="Dique las palmeras, San Francisco, Provincia de San Luis." />
-                        <EventInfo icon={HiOutlineClock} title="Cierre de Inscripciones" info="6 de Septiembre de 2024 - 10:00hs." />
+                        <EventInfo icon={HiOutlineClock} title="Cierre de Inscripciones" info="30 de Agosto de 2024 - 10:00hs." />
                     </div>
 
                     <hr className="border-gray-300 my-8" />
