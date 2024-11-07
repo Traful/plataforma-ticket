@@ -1,6 +1,6 @@
 import { Sidebar, Navbar } from "flowbite-react";
 import { useState } from "react";
-import { HiOutlineTicket, HiSearchCircle, HiOutlineUserCircle } from "react-icons/hi";
+import { HiOutlineTicket, HiSearchCircle, HiOutlineUserCircle, HiDownload } from "react-icons/hi"; // Importa el ícono HiDownload
 import Logo from "../../assets/img/logonegro.png";
 import { Outlet, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -33,6 +33,9 @@ const Home = () => {
                         <Link to="/mis_inscripciones" className="flex items-center w-full p-2 text-gray-700 hover:bg-gray-200">
                             <HiSearchCircle className="mr-2" /> Mis Inscripciones
                         </Link>
+                        <a href="https://vivisanfrancisco.com/recursos/deslinde.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center w-full p-2 text-gray-700 hover:bg-gray-200">
+                            <HiDownload className="mr-2" /> Descargar Deslinde
+                        </a>
                         <button className="flex items-center w-full p-2 text-gray-700 hover:bg-gray-200" onClick={handleLogout}>
                             <HiOutlineUserCircle className="mr-2" /> Cerrar Sesión
                         </button>
@@ -53,6 +56,9 @@ const Home = () => {
                                 </Sidebar.Item>
                                 <Sidebar.Item icon={HiSearchCircle} as={Link} to="/mis_inscripciones">
                                     Mis Inscripciones
+                                </Sidebar.Item>
+                                <Sidebar.Item icon={HiDownload} href="https://vivisanfrancisco.com/recursos/deslinde.pdf" target="_blank" rel="noopener noreferrer">
+                                    Descargar Deslinde
                                 </Sidebar.Item>
                             </Sidebar.ItemGroup>
                             <Sidebar.ItemGroup>

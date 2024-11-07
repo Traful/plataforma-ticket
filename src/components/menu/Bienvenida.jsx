@@ -10,6 +10,7 @@ const Bienvenida = () => {
     const apiUrl = import.meta.env.VITE_API_URL;
     const [cargando, setCargando] = useState(true);
     const [verificacionExitosa, setVerificacionExitosa] = useState(false);
+    const [errorMensaje, setErrorMensaje] = useState("");
 
     useEffect(() => {
         const verificarToken = async () => {
@@ -17,9 +18,17 @@ const Bienvenida = () => {
                 const response = await fetch(`${apiUrl}/user/register/temp/${token}`);
                 if (response.ok) {
                     setVerificacionExitosa(true);
+                } else if (response.status === 401) {
+                    setErrorMensaje("El token no es válido o ha expirado.");
+                    setVerificacionExitosa(false);
+                } else {
+                    setErrorMensaje("Ocurrió un error inesperado.");
+                    setVerificacionExitosa(false);
                 }
             } catch (error) {
                 console.error('Error al verificar el token:', error);
+                setErrorMensaje("Ocurrió un error de red.");
+                setVerificacionExitosa(false);
             } finally {
                 setCargando(false);
             }
@@ -59,7 +68,7 @@ const Bienvenida = () => {
                         <HiXCircle className="w-16 h-16 text-red-500 mx-auto" />
                         <h2 className="text-3xl font-bold text-center mb-4 text-[#00263b]">Error de Verificación</h2>
                         <p className="text-center text-[#00263b] mb-6">
-                            Hubo un problema al verificar su cuenta. Por favor, contacte a soporte.
+                            {errorMensaje}
                         </p>
                     </>
                 )}

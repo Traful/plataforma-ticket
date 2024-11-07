@@ -13,11 +13,8 @@ const Footer = () => {
             <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between px-4">
                 {/* Logos a la izquierda */}
                 <div className="flex flex-wrap justify-center sm:justify-start items-center mb-4 sm:mb-0">
-                    <img src={LogoProvincia} alt="Logo Muni" className="w-auto h-10 m-2" />
                     <img src={LogoMuni} alt="Logo Muni" className="w-auto h-10 m-2" />
                     <img src={LogoVivi} alt="Logo Muni" className="w-auto h-12 m-2" />
-                    <img src={LogoFas} alt="Logo Fas" className="w-auto h-12 m-2" />
-                    <img src={LogoConfederacion} alt="Logo Confederacion" className="w-auto h-12 m-2" />
                 </div>
                 {/* Texto y logo de Codeo a la derecha */}
                 <a href="https://www.instagram.com/codeo.ar" target="_blank" rel="noopener noreferrer" className="flex items-center">

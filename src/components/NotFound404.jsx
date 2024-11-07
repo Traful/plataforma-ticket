@@ -30,6 +30,10 @@ const NotFound = () => {
                         </Button>
                     </Link>
                 </div>
+                {/* Texto pequeño de contacto */}
+                <div className="text-center text-sm text-gray-500 mt-4">
+                    Si necesitas ayuda, por favor <a href="https://instagram.com/codeo.ar" className="text-blue-500 hover:text-blue-700 underline">contáctanos</a>.
+                </div>
             </Card>
         </div>
     );

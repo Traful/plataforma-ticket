@@ -11,14 +11,13 @@ const Register = () => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(''); // Limpiar errores previos
         setIsLoading(true);
 
         if (dataUser.password !== dataUser.confirmPassword) {
-            setError('Las contraseñas no coinciden.');
+            setError('Las contraseñas no coinciden. Si consideras que hubo un error, contáctanos en <a href="https://instagram.com/codeo.ar" class="text-blue-500 underline">Instagram</a>.');
             setIsLoading(false);
             return;
         }
@@ -44,11 +43,11 @@ const Register = () => {
                 navigate('/registro-exitoso');
             } else {
                 const errorData = await response.json();
-                setError(errorData.message || 'Error al registrar usuario. Por favor, inténtalo de nuevo.');
+                setError(`${errorData.message || 'Error al registrar usuario. Por favor, inténtalo de nuevo.'} Si consideras que hubo un error, contáctanos en <a href="https://instagram.com/codeo.ar" class="text-blue-500 underline">Instagram</a>.`);
             }
         } catch (error) {
             console.error('Error:', error);
-            setError('Hubo un error de conexión. Por favor, intenta más tarde.');
+            setError('Hubo un error de conexión. Por favor, intenta más tarde. Si consideras que hubo un error, contáctanos en <a href="https://instagram.com/codeo.ar" class="text-blue-500 underline">Instagram</a>.');
         } finally {
             setIsLoading(false);
         }
@@ -63,7 +62,7 @@ const Register = () => {
                 <h2 className="text-3xl font-bold text-center mb-6 text-[#00263b]">Crear una nueva cuenta</h2>
                 {error && (
                     <Alert color="failure" icon={HiInformationCircle} className="mb-4">
-                        <span className="font-medium">Error!</span> {error}
+                        <span className="font-medium">Error!</span> <span dangerouslySetInnerHTML={{ __html: error }} />
                     </Alert>
                 )}
                 <form className="space-y-6" onSubmit={handleSubmit}>

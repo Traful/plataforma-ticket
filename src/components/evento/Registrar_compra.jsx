@@ -142,11 +142,11 @@ const Registrar_compra = () => {
         if (!/^\d{7,8}$/.test(formData.dni)) {
             errors.push("El DNI debe tener entre 7 y 8 dígitos.");
         }
-        if (!/^[A-Za-z\s]{2,50}$/.test(formData.nombre)) {
-            errors.push("El nombre debe contener solo letras y espacios, entre 2 y 50 caracteres.");
+        if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$/.test(formData.nombre)) {
+            errors.push("El nombre debe contener solo letras, espacios y acentos, entre 2 y 50 caracteres.");
         }
-        if (!/^[A-Za-z\s]{2,50}$/.test(formData.apellido)) {
-            errors.push("El apellido debe contener solo letras y espacios, entre 2 y 50 caracteres.");
+        if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$/.test(formData.apellido)) {
+            errors.push("El apellido debe contener solo letras, espacios y acentos, entre 2 y 50 caracteres.");
         }
         if (!formData.fecha_nacimiento) {
             errors.push("La fecha de nacimiento es requerida.");
@@ -562,6 +562,9 @@ const Registrar_compra = () => {
                                 </Button>
                             </div>
                         </form>
+                        <div className="text-center text-xs text-gray-500 mt-4">
+                            Si necesitas ayuda, por favor <a href="https://instagram.com/codeo.ar" target='_blank' className="text-blue-500 hover:text-blue-700 underline">contáctanos</a>.
+                        </div>
                     </Card>
                 </div>
 

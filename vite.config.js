@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/ticket',
+  base: '/ticket/',  // Asegúrate de que base tiene la barra al final
   server: {
-    historyApiFallback: true,
+    historyApiFallback: true,  // Correcto para el entorno de desarrollo
   },
 })
