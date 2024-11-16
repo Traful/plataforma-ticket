@@ -9,13 +9,80 @@ import {
     HiOutlineUserGroup,
     HiOutlineMusicNote
 } from 'react-icons/hi';
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { app } from '../config/firebase';
 import Logo from "../assets/img/logo_blanco.png";
 import EventoBanner from "../assets/img/festival.jpg";
 import { useAuth } from '../context/AuthContext';
 import Loading from './ui/Loading';
 import Footer from './Footer';
+
+// Detecta navegadores internos problemáticos
+const isInAppBrowser = () => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    return /FBAN|FBAV|Instagram|Line|Messenger|LinkedIn|Twitter|WhatsApp/i.test(userAgent);
+};
+
+// Función mejorada para obtener la URL del navegador externo
+const getExternalBrowserUrl = (targetUrl) => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const isAndroid = /android/i.test(userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+
+    if (isAndroid) {
+        // URL más robusta para Android
+        return {
+            primary: `intent://${targetUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`,
+            fallback: `googlechrome://navigate?url=${targetUrl}`
+        };
+    } else if (isIOS) {
+        // URLs para iOS con fallbacks
+        return {
+            primary: `x-web-search://${targetUrl}`,
+            fallback: targetUrl
+        };
+    }
+    return { primary: targetUrl, fallback: targetUrl };
+};
+
+// Función para abrir en navegador externo
+const openInExternalBrowser = () => {
+    const currentUrl = window.location.href;
+    
+    // Intenta múltiples métodos de redirección
+    const tryRedirect = () => {
+        // Para Android
+        if (/android/i.test(navigator.userAgent)) {
+            // Intenta Chrome
+            window.location.href = `intent://${window.location.host}${window.location.pathname}#Intent;scheme=https;package=com.android.chrome;end`;
+            
+            // Fallback a navegador por defecto
+            setTimeout(() => {
+                window.location.href = `market://details?id=com.android.chrome`;
+            }, 2000);
+        }
+        // Para iOS
+        else if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            // Intenta Safari
+            window.location.href = currentUrl;
+            
+            // Fallback directo
+            setTimeout(() => {
+                window.location.replace(currentUrl);
+            }, 2000);
+        }
+        // Para otros dispositivos
+        else {
+            window.open(currentUrl, '_system');
+        }
+    };
+
+    // Muestra el mensaje y ejecuta la redirección
+    alert('Para una mejor experiencia, la aplicación se abrirá en tu navegador predeterminado.');
+    tryRedirect();
+};
+
+
 
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
@@ -28,70 +95,99 @@ const Login = () => {
     const navigate = useNavigate();
     const { user, login, authLoading } = useAuth();
 
+    // Redireccionar a navegador externo si es necesario
+    useEffect(() => {
+        if (isInAppBrowser()) {
+            openInExternalBrowser();
+        }
+    }, []);
+
+    // Redirige si el usuario ya está autenticado
     useEffect(() => {
         if (!authLoading && user) {
             navigate('/', { replace: true });
         }
     }, [user, authLoading, navigate]);
 
-    // Login tradicional con email y contraseña
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (isLoading) return;
+    // Manejo del redireccionamiento con Firebase
+    useEffect(() => {
+        const handleRedirectResult = async () => {
+            try {
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    const firebaseUser = result.user;
+                    const idToken = await firebaseUser.getIdToken();
 
-        setError('');
-        setIsLoading(true);
+                    if (!idToken) {
+                        throw new Error('No se pudo obtener el token de Firebase');
+                    }
 
-        try {
-            const apiUrl = import.meta.env.VITE_API_URL;
-            const response = await fetch(`${apiUrl}/user/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({ email, password })
-            });
+                    // Enviar token al backend
+                    const apiUrl = import.meta.env.VITE_API_URL;
+                    const response = await fetch(`${apiUrl}/user/google-login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${idToken}`
+                        },
+                        body: JSON.stringify({
+                            email: firebaseUser.email,
+                            firstname: firebaseUser.displayName?.split(' ')[0] || '',
+                            lastname: firebaseUser.displayName?.split(' ').slice(1).join(' ') || '',
+                            googleId: firebaseUser.uid,
+                            firebaseToken: idToken
+                        })
+                    });
 
-            const data = await response.json();
+                    const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Error en el inicio de sesión');
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Error en la respuesta del servidor');
+                    }
+
+                    if (data.ok && data.data?.jwt) {
+                        const userData = {
+                            ...data.data,
+                            googleId: firebaseUser.uid,
+                            firebaseToken: idToken
+                        };
+                        login(userData);
+                        navigate('/', { replace: true });
+                    } else {
+                        throw new Error(data.msg || 'Error en la autenticación con Google');
+                    }
+                }
+            } catch (error) {
+                console.error('Error en redirección:', error);
+                setError('Error en la autenticación. Por favor, intenta nuevamente.');
             }
+        };
 
-            if (data.ok && data.data?.jwt) {
-                login(data.data);
-                navigate('/', { replace: true });
-            } else {
-                setError(data.msg || 'Credenciales inválidas');
-            }
-        } catch (error) {
-            console.error('Error en login:', error);
-            setError('Error en el inicio de sesión. Por favor, verifica tus credenciales.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        handleRedirectResult();
+    }, [auth, login, navigate]);
 
     // Login con Google
     const handleGoogleLogin = async () => {
-        if (isLoading) return;
-        setIsLoading(true);
-        setError('');
-
         try {
-            // 1. Autenticación con Firebase
+            setError('');
+            setIsLoading(true);
+
+            if (isInAppBrowser()) {
+                // Si es navegador interno, mostrar mensaje y no proceder
+                setError('Por favor, usa tu navegador predeterminado para iniciar sesión.');
+                return;
+            }
+
+            // Usar popup para navegadores normales
             const result = await signInWithPopup(auth, googleProvider);
             const firebaseUser = result.user;
-            
-            // 2. Obtener el token ID de Firebase
             const idToken = await firebaseUser.getIdToken();
-            
+
             if (!idToken) {
                 throw new Error('No se pudo obtener el token de Firebase');
             }
 
-            // 3. Autenticación con nuestro backend
             const apiUrl = import.meta.env.VITE_API_URL;
             const response = await fetch(`${apiUrl}/user/google-login`, {
                 method: 'POST',
@@ -127,15 +223,47 @@ const Login = () => {
                 throw new Error(data.msg || 'Error en la autenticación con Google');
             }
         } catch (error) {
-            console.error('Error detallado:', error);
-            
-            if (error.code === 'auth/popup-closed-by-user') {
-                setError('El proceso de inicio de sesión fue cancelado');
-            } else if (error.code === 'auth/network-request-failed') {
-                setError('Error de conexión. Por favor, verifica tu conexión a internet');
-            } else {
-                setError('Error al iniciar sesión con Google: ' + (error.message || 'Error desconocido'));
+            console.error('Error en inicio de sesión con Google:', error);
+            setError('Error al iniciar sesión con Google. Intenta nuevamente.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Login tradicional con email y contraseña
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (isLoading) return;
+
+        setError('');
+        setIsLoading(true);
+
+        try {
+            const apiUrl = import.meta.env.VITE_API_URL;
+            const response = await fetch(`${apiUrl}/user/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Error en el inicio de sesión');
             }
+
+            if (data.ok && data.data?.jwt) {
+                login(data.data);
+                navigate('/', { replace: true });
+            } else {
+                setError(data.msg || 'Credenciales inválidas');
+            }
+        } catch (error) {
+            console.error('Error en login:', error);
+            setError('Error en el inicio de sesión. Por favor, verifica tus credenciales.');
         } finally {
             setIsLoading(false);
         }
