@@ -9,77 +9,139 @@ import {
     HiOutlineUserGroup,
     HiOutlineMusicNote
 } from 'react-icons/hi';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { app } from '../config/firebase';
 import Logo from "../assets/img/logo_blanco.png";
 import EventoBanner from "../assets/img/festival.jpg";
 import { useAuth } from '../context/AuthContext';
 import Loading from './ui/Loading';
+import Footer from './Footer';
+
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
 const Login = () => {
-    const [validating, setValidating] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { user, login, authLoading } = useAuth();
 
     useEffect(() => {
-        const validateToken = async (valor) => {
-            try {
-                const apiUrl = import.meta.env.VITE_API_URL;
-                const response = await fetch(`${apiUrl}/user/token/validate/${valor}`);
-                const json = await response.json();
-                if (json.data) {
-                    login(json.data);
-                    navigate('/');
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        const valor = localStorage.getItem("tikets-token");
-        if (valor) {
-            validateToken(valor).finally(() => setValidating(false));
-        } else {
-            setValidating(false);
+        if (!authLoading && user) {
+            navigate('/', { replace: true });
         }
-    }, [login, navigate]);
+    }, [user, authLoading, navigate]);
 
+    // Login tradicional con email y contraseña
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isLoading) return;
+
         setError('');
         setIsLoading(true);
-        const apiUrl = import.meta.env.VITE_API_URL;
 
-        const formData = { email, password };
         try {
+            const apiUrl = import.meta.env.VITE_API_URL;
             const response = await fetch(`${apiUrl}/user/login`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ email, password })
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                if (data.ok) {
-                    localStorage.setItem("tikets-token", data.data.jwt);
-                    login(data.data);
-                    navigate('/');
-                } else {
-                    setError(data.msg || 'Error en el inicio de sesión. Por favor, verifica tus credenciales.');
-                }
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Error en el inicio de sesión');
+            }
+
+            if (data.ok && data.data?.jwt) {
+                login(data.data);
+                navigate('/', { replace: true });
             } else {
-                setError('Error en el inicio de sesión. Por favor, verifica tus credenciales.');
+                setError(data.msg || 'Credenciales inválidas');
             }
         } catch (error) {
-            console.error('Error:', error);
-            setError('Hubo un error de conexión. Por favor, intenta más tarde.');
+            console.error('Error en login:', error);
+            setError('Error en el inicio de sesión. Por favor, verifica tus credenciales.');
         } finally {
             setIsLoading(false);
         }
     };
 
-    if (validating) return <Loading />;
+    // Login con Google
+    const handleGoogleLogin = async () => {
+        if (isLoading) return;
+        setIsLoading(true);
+        setError('');
+
+        try {
+            // 1. Autenticación con Firebase
+            const result = await signInWithPopup(auth, googleProvider);
+            const firebaseUser = result.user;
+            
+            // 2. Obtener el token ID de Firebase
+            const idToken = await firebaseUser.getIdToken();
+            
+            if (!idToken) {
+                throw new Error('No se pudo obtener el token de Firebase');
+            }
+
+            // 3. Autenticación con nuestro backend
+            const apiUrl = import.meta.env.VITE_API_URL;
+            const response = await fetch(`${apiUrl}/user/google-login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${idToken}`
+                },
+                body: JSON.stringify({
+                    email: firebaseUser.email,
+                    firstname: firebaseUser.displayName?.split(' ')[0] || '',
+                    lastname: firebaseUser.displayName?.split(' ').slice(1).join(' ') || '',
+                    googleId: firebaseUser.uid,
+                    firebaseToken: idToken
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Error en la respuesta del servidor');
+            }
+
+            if (data.ok && data.data?.jwt) {
+                const userData = {
+                    ...data.data,
+                    googleId: firebaseUser.uid,
+                    firebaseToken: idToken
+                };
+                login(userData);
+                navigate('/', { replace: true });
+            } else {
+                throw new Error(data.msg || 'Error en la autenticación con Google');
+            }
+        } catch (error) {
+            console.error('Error detallado:', error);
+            
+            if (error.code === 'auth/popup-closed-by-user') {
+                setError('El proceso de inicio de sesión fue cancelado');
+            } else if (error.code === 'auth/network-request-failed') {
+                setError('Error de conexión. Por favor, verifica tu conexión a internet');
+            } else {
+                setError('Error al iniciar sesión con Google: ' + (error.message || 'Error desconocido'));
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    if (authLoading) return <Loading />;
 
     const features = [
         { icon: HiOutlineTicket, text: "Comprá tus entradas", color: "text-cyan-600" },
@@ -106,16 +168,16 @@ const Login = () => {
                         {/* Left Section */}
                         <div className="w-full lg:w-1/2 text-white space-y-6 lg:space-y-8">
                             <div className="text-center lg:text-left">
-                                <img 
-                                    src={Logo} 
-                                    alt="Logo" 
-                                    className="h-16 md:h-24 mb-4 md:mb-6 mx-auto lg:mx-0" 
+                                <img
+                                    src={Logo}
+                                    alt="Logo"
+                                    className="h-16 md:h-24 mb-4 md:mb-6 mx-auto lg:mx-0"
                                 />
                                 <h1 className="text-3xl md:text-5xl font-bold mb-2 md:mb-4 leading-tight">
                                     36° Festival Provincial del Artesano
                                 </h1>
                                 <p className="text-lg md:text-xl text-gray-200 mb-6 md:mb-8">
-                                    Celebrando nuestra cultura y tradiciones
+                                    Celebrando nuestra cultura y tradición
                                 </p>
                             </div>
 
@@ -177,22 +239,6 @@ const Login = () => {
                                             />
                                         </div>
 
-                                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                            <div className="flex items-center">
-                                                <input
-                                                    id="remember"
-                                                    type="checkbox"
-                                                    className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
-                                                />
-                                                <label htmlFor="remember" className="ml-2 block text-sm text-gray-700">
-                                                    Recordarme
-                                                </label>
-                                            </div>
-                                            <a href="#" className="text-sm text-cyan-600 hover:text-cyan-500">
-                                                ¿Olvidaste tu contraseña?
-                                            </a>
-                                        </div>
-
                                         <Button
                                             type="submit"
                                             gradientDuoTone="cyanToBlue"
@@ -220,9 +266,27 @@ const Login = () => {
                                     </div>
 
                                     <div className="w-full">
-                                        <Button color="light" className="w-full">
-                                            <img className="h-5 w-5 mr-2" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" />
-                                            Google
+                                        <Button
+                                            color="light"
+                                            className="w-full"
+                                            onClick={handleGoogleLogin}
+                                            disabled={isLoading}
+                                        >
+                                            {isLoading ? (
+                                                <>
+                                                    <Spinner size="sm" />
+                                                    <span className="ml-2">Iniciando sesión con Google...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <img
+                                                        className="h-5 w-5 mr-2"
+                                                        src="https://www.svgrepo.com/show/475656/google-color.svg"
+                                                        alt="Google Logo"
+                                                    />
+                                                    Google
+                                                </>
+                                            )}
                                         </Button>
                                     </div>
 
@@ -238,6 +302,7 @@ const Login = () => {
                     </div>
                 </div>
             </div>
+            <Footer />
         </main>
     );
 };

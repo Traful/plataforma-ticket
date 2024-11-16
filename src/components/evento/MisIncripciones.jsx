@@ -1,111 +1,209 @@
-import { useEffect, useState } from 'react';
-import { useAuth } from "./../../context/AuthContext";
-import { HiOutlineTicket, HiOutlineInformationCircle, HiOutlineMail } from "react-icons/hi";
-import SkeletonLoader from '../ui/Skeletor';
+import React, { useEffect, useState } from 'react';
+import { useAuth } from "../../context/AuthContext";
+import { HiOutlineTicket, HiOutlineInformationCircle, HiOutlinePrinter, HiOutlineCalendar, HiOutlineQrcode } from "react-icons/hi";
+import { toast } from 'react-toastify';
 
-const MisInscripciones = () => {
+const MisTickets = () => {
     const [loading, setLoading] = useState(true);
-    const [inscripciones, setInscripciones] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1); // Estado para la página actual
-    const inscripcionesPerPage = 5; // Número de inscripciones por página
+    const [tickets, setTickets] = useState([]);
+    const [error, setError] = useState(null);
+    const [isPrinting, setIsPrinting] = useState(false);
     const { user } = useAuth();
 
     useEffect(() => {
-        const fetchInscripciones = async () => {
-            try {
-                const apiUrl = import.meta.env.VITE_API_URL;
-                const response = await fetch(`${apiUrl}/inscripciones/${user.id}`, {
-                    headers: {
-                        'Authorization': user.jwt,
-                    }
-                });
-                const data = await response.json();
-                setInscripciones(data.data);
-            } catch (error) {
-                console.error('Error:', error);
-            } finally {
-                setLoading(false);
+        fetchTickets();
+    }, [user]);
+
+    const fetchTickets = async () => {
+        try {
+            setLoading(true);
+            const apiUrl = import.meta.env.VITE_API_URL;
+            const response = await fetch(`${apiUrl}/evento/mis-tickets`, {
+                headers: {
+                    'Authorization': user.jwt
+                }
+            });
+            const data = await response.json();
+            if (data.ok) {
+                setTickets(data.data || []);
+            } else {
+                setError(data.msg);
             }
-        };
-
-        if (user.id) {
-            fetchInscripciones();
+        } catch (error) {
+            console.error('Error:', error);
+            setError('Error al cargar los tickets');
+        } finally {
+            setLoading(false);
         }
-    }, [user.id]);
+    };
 
-    // Calcular los elementos a mostrar en la página actual
-    const indexOfLastInscripcion = currentPage * inscripcionesPerPage;
-    const indexOfFirstInscripcion = indexOfLastInscripcion - inscripcionesPerPage;
-    const currentInscripciones = inscripciones.slice(indexOfFirstInscripcion, indexOfLastInscripcion);
+    const handleReprint = async (qrCode) => {
+        let toastId = null;
+        try {
+            setIsPrinting(true);
+            toastId = toast.loading('Generando ticket...');
+            
+            const apiUrl = import.meta.env.VITE_API_URL;
+            const response = await fetch(`${apiUrl}/evento/reimprimir-ticket/${qrCode}`, {
+                headers: {
+                    'Authorization': user.jwt
+                }
+            });
 
-    // Cambiar la página
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.msg || 'Error al generar el ticket');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ticket-${qrCode}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            toast.dismiss(toastId);
+            toast.success('Ticket generado exitosamente');
+        } catch (error) {
+            console.error('Error:', error);
+            if (toastId) {
+                toast.dismiss(toastId);
+            }
+            toast.error(error.message || 'Error al generar el ticket');
+        } finally {
+            setIsPrinting(false);
+        }
+    };
+
+    const handleReprintWithDebounce = (() => {
+        let timeout;
+        return (qrCode) => {
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout(() => {
+                handleReprint(qrCode);
+            }, 300);
+        };
+    })();
+
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleString('es-AR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    const formatAmount = (amount) => {
+        return new Intl.NumberFormat('es-AR', {
+            style: 'currency',
+            currency: 'ARS'
+        }).format(amount);
+    };
+
+    if (loading) {
+        return (
+            <div className="p-6 bg-white rounded-lg shadow-md">
+                <div className="animate-pulse space-y-6">
+                    {[1, 2].map((i) => (
+                        <div key={i} className="border rounded-lg p-4">
+                            <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+                            <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="p-6 mr-1 mb-1 bg-white rounded-lg shadow-md text-center">
-            <h4 className="text-2xl font-bold mb-6 text-center text-gray-800 flex items-center justify-center space-x-2">
-                <HiOutlineTicket size={24} />
-                <span>Mis Inscripciones</span>
-            </h4>
-            <hr className='mb-6 border-gray-300' />
-            {loading ? (
-                <ul className="space-y-4">
-                    {[1, 2, 3].map((_, index) => (
-                        <li key={index} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border rounded-lg bg-gray-50 shadow-sm">
-                            <SkeletonLoader />
-                        </li>
-                    ))}
-                </ul>
-            ) : currentInscripciones.length > 0 ? (
-                <>
-                    <ul className="space-y-4">
-                        {currentInscripciones.map((inscripcion) => (
-                            <li key={inscripcion.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border rounded-lg bg-gray-50 shadow-sm hover:bg-gray-100 transition duration-300 ease-in-out">
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-semibold text-gray-900">{inscripcion.nombre} {inscripcion.apellido}</h3>
-                                    <p className="text-gray-600">DNI: <span className="font-medium">{inscripcion.dni}</span></p>
-                                    <p className="text-gray-600">Categoría de Edad: <span className="font-medium">{inscripcion.categoria_edad}</span></p>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
+        <div className="p-6 bg-white rounded-lg shadow-md">
+            <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-800">
+                    <HiOutlineTicket size={24} className="text-blue-600" />
+                    <span>Mis Tickets</span>
+                </h2>
+            </div>
 
-                    {/* Paginación */}
-                    <div className="mt-4 flex justify-center space-x-2">
-                        {Array.from({ length: Math.ceil(inscripciones.length / inscripcionesPerPage) }, (_, index) => (
-                            <button
-                                key={index + 1}
-                                onClick={() => paginate(index + 1)}
-                                className={`px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'} transition duration-300`}
-                            >
-                                {index + 1}
-                            </button>
-                        ))}
-                    </div>
-                </>
-            ) : (
-                <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg">
-                    <HiOutlineInformationCircle className="text-blue-500 w-16 h-16 mb-4" />
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Aún no tienes inscripciones</h3>
-                    <p className="text-gray-600 text-center">
-                        Cuando te inscribas en un evento, tus inscripciones aparecerán aquí.
-                    </p>
+            {error && (
+                <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg">
+                    {error}
                 </div>
             )}
 
-            {/* Tarjeta de contacto */}
-            <div className="mt-8 p-6 bg-gray-50 rounded-lg shadow-md text-center border-t border-gray-200">
-                <HiOutlineMail size={32} className="text-blue-600 mx-auto mb-4" />
-                <h4 className="text-xl font-semibold text-gray-800 mb-2">¿Tienes algún problema?</h4>
-                <p className="text-gray-600 mb-4">
-                    Si encuentras algún problema con tus inscripciones o tienes alguna duda, no dudes en comunicarte con nosotros.
-                </p>
-                <a href="https://www.instagram.com/codeo.ar" target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out">
-                    Contactar a Codeo.ar
-                </a>
-            </div>
+            {tickets.length > 0 ? (
+                <div className="space-y-6">
+                    {tickets.map((order) => (
+                        <div key={order.order_id} className="border border-gray-200 rounded-lg overflow-hidden">
+                            <div className="bg-gray-50 p-4 border-b">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h3 className="font-semibold text-gray-900">
+                                            Orden #{order.external_reference?.substr(0, 8)}
+                                        </h3>
+                                        <p className="text-sm text-gray-600 mt-1 flex items-center gap-1">
+                                            <HiOutlineCalendar className="text-gray-500" />
+                                            {formatDate(order.created_at)}
+                                        </p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-lg font-bold text-blue-600">
+                                            {formatAmount(order.total_amount)}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="p-4">
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    {order.individual_tickets.map((ticket, index) => (
+                                        <div key={index} className="bg-white rounded-lg border p-4 hover:shadow-md transition-shadow">
+                                            <div className="flex justify-between items-center mb-3">
+                                                <span className="flex items-center gap-2 text-gray-700">
+                                                    <HiOutlineTicket className="text-blue-500" />
+                                                    Día {ticket.day}
+                                                </span>
+                                                <span className="px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
+                                                    {ticket.status}
+                                                </span>
+                                            </div>
+                                            <div className="text-sm text-gray-600 mb-3 flex items-center gap-2">
+                                                <HiOutlineQrcode className="text-gray-500" />
+                                                <span className="font-mono">{ticket.qr_code}</span>
+                                            </div>
+                                            <button
+                                                onClick={() => handleReprintWithDebounce(ticket.qr_code)}
+                                                disabled={isPrinting}
+                                                className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                <HiOutlinePrinter />
+                                                {isPrinting ? 'Generando...' : 'Reimprimir Ticket'}
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                    <HiOutlineInformationCircle className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-2 text-lg font-medium text-gray-900">No tienes tickets</h3>
+                    <p className="mt-1 text-gray-500">
+                        Cuando compres tickets para el evento, aparecerán aquí.
+                    </p>
+                </div>
+            )}
         </div>
     );
 };
 
-export default MisInscripciones;
+export default MisTickets;
