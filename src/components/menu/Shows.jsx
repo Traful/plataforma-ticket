@@ -1,52 +1,68 @@
 import React from 'react';
-import { HiOutlineMusicNote, HiOutlineUserGroup, HiOutlineStar, HiOutlineCalendar } from "react-icons/hi";
+import { Calendar, Music, Clock, Users } from 'lucide-react';
 
 const artistasData = [
     {
         dia: "11 de Enero",
-        color: "border-[#f9b603]",
+        color: "#f9b603",
         artistas: [
             {
                 nombre: "Los Cantores del Alba",
-                descripcion: "Este grupo, conocido por su compromiso con la música folclórica, llevará al público a un viaje musical lleno de emotividad y tradición.",
-                horario: "21:00 hs",
                 tipo: "Folclore Tradicional"
             },
             {
                 nombre: "Chipote",
-                descripcion: "Con su estilo fresco y enérgico, Chipote hará que nadie pueda resistirse a seguir en la pista de baile.",
-                horario: "22:30 hs",
                 tipo: "Cuarteto"
             },
             {
                 nombre: "Juan Manuel \"El Ángel Tropical\"",
-                descripcion: "Su carisma y su capacidad para conectar con el público serán el complemento perfecto para una noche inolvidable.",
-                horario: "00:00 hs",
                 tipo: "Tropical"
+            },
+            {
+                nombre: "Ballets folclóricos",
+                tipo: "Danza"
+            },
+            {
+                nombre: "Los Sanfra",
+                tipo: "Folclore"
+            },
+            {
+                nombre: "Trío Chamamecero",
+                tipo: "Chamamé"
+            },
+            {
+                nombre: "Emanuel Mansilla",
+                tipo: "Folclore"
             }
         ]
     },
     {
         dia: "12 de Enero",
-        color: "border-[#17b1be]",
+        color: "#17b1be",
         artistas: [
             {
                 nombre: "Ceibo",
-                descripcion: "Este grupo de folclore, consagrados en Cosquín 2024, con sus interpretaciones profundas y auténticas, se convertirá en el alma de la celebración.",
-                horario: "21:00 hs",
                 tipo: "Folclore"
             },
             {
                 nombre: "Luis Soloa",
-                descripcion: "Reconocido por su capacidad de transmitir emociones a través de su música, su actuación promete ser uno de los grandes momentos del festival.",
-                horario: "22:30 hs",
                 tipo: "Solista"
             },
             {
                 nombre: "Euge Quevedo y La Banda de Carlitos",
-                descripcion: "Con su ritmo contagioso, su talento escénico y su energía cerrarán con broche de oro este festival en un gran cierre.",
-                horario: "00:00 hs",
                 tipo: "Cuarteto"
+            },
+            {
+                nombre: "Wakay",
+                tipo: "Folclore"
+            },
+            {
+                nombre: "Ballets folclóricos",
+                tipo: "Danza"
+            },
+            {
+                nombre: "Reina del Artesano",
+                tipo: "Evento Especial"
             }
         ]
     }
@@ -54,57 +70,80 @@ const artistasData = [
 
 const GrillaArtistas = () => {
     return (
-        <div className="bg-gray-50/80 py-8">
-            <div className="max-w-5xl mx-auto px-4">
-                <div className="flex items-center gap-2 text-[#17b1be] mb-4">
-                    <HiOutlineCalendar className="w-5 h-5" />
-                    <span>Programación del Festival</span>
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
+            <div className="max-w-6xl mx-auto px-4">
+                <div className="text-center mb-12">
+                    <div className="inline-flex items-center justify-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full mb-4">
+                        <Calendar className="w-4 h-4" />
+                        <span className="text-sm font-medium">Programación del Festival</span>
+                    </div>
+                    <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                        Grilla de Artistas
+                    </h2>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-[#00263b] mb-6">
-                    Grilla de Artistas
-                </h2>
 
-                <div className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-8">
                     {artistasData.map((dia, index) => (
-                        <div key={index} className="space-y-4">
-                            <h3 className="text-xl font-bold text-[#00263b] flex items-center gap-2">
-                                {dia.dia}
-                                <span className="text-xs font-medium text-[#17b1be] bg-[#17b1be]/10 px-2 py-1 rounded-full">
-                                    Desde las 21:00hs
-                                </span>
-                            </h3>
+                        <div key={index} className="relative">
+                            <div 
+                                className="absolute inset-0 bg-gradient-to-br rounded-3xl opacity-5"
+                                style={{ backgroundColor: dia.color }}
+                            />
+                            <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+                                <div 
+                                    className="h-2"
+                                    style={{ backgroundColor: dia.color }}
+                                />
+                                <div className="p-6">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div 
+                                            className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                                            style={{ backgroundColor: `${dia.color}15` }}
+                                        >
+                                            <Calendar 
+                                                className="w-6 h-6"
+                                                style={{ color: dia.color }}
+                                            />
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-gray-900">
+                                            {dia.dia}
+                                        </h3>
+                                    </div>
 
-                            <div className="grid gap-4">
-                                {dia.artistas.map((artista, idx) => (
-                                    <div 
-                                        key={idx} 
-                                        className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300"
-                                    >
-                                        <div className={`border-l-4 ${dia.color} px-6 py-5`}>
-                                            <div className="flex flex-col md:flex-row gap-4 justify-between">
-                                                <div className="flex-1">
-                                                    <div className="flex items-center gap-2 mb-2">
-                                                        <h4 className="text-xl font-bold text-[#00263b]">
-                                                            {artista.nombre}
-                                                        </h4>
-                                                        <span className="text-xs font-medium text-[#17b1be] bg-[#17b1be]/10 px-2 py-1 rounded-full">
-                                                            {artista.tipo}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-gray-600 text-sm">
-                                                        {artista.descripcion}
-                                                    </p>
+                                    <div className="space-y-4">
+                                        {dia.artistas.map((artista, idx) => (
+                                            <div 
+                                                key={idx}
+                                                className="group flex items-center gap-4 p-4 rounded-xl transition-all duration-300 hover:bg-gray-50"
+                                            >
+                                                <div 
+                                                    className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                                                    style={{ backgroundColor: `${dia.color}15` }}
+                                                >
+                                                    <Music 
+                                                        className="w-5 h-5"
+                                                        style={{ color: dia.color }}
+                                                    />
                                                 </div>
-                                                <div className="flex items-center gap-2 text-[#00263b]">
-                                                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
-                                                        <HiOutlineMusicNote className="w-5 h-5 text-[#17b1be]" />
-                                                    </div>
-                                                    <span className="font-medium">{artista.horario}</span>
+                                                <div className="flex-1">
+                                                    <h4 className="font-semibold text-gray-900 mb-1">
+                                                        {artista.nombre}
+                                                    </h4>
+                                                    <span 
+                                                        className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full"
+                                                        style={{ 
+                                                            backgroundColor: `${dia.color}15`,
+                                                            color: dia.color
+                                                        }}
+                                                    >
+                                                        <Users className="w-3 h-3" />
+                                                        {artista.tipo}
+                                                    </span>
                                                 </div>
                                             </div>
-                                        </div>
+                                        ))}
                                     </div>
-                                ))}
+                                </div>
                             </div>
                         </div>
                     ))}

@@ -27,8 +27,8 @@ const Evento = () => {
     const [mpInitialized, setMpInitialized] = useState(false);
 
     const PRICES = {
-        day1: 6,
-        day2: 1
+        day1: 6000,
+        day2: 10000
     };
 
     const MAX_TICKETS_PER_DAY = 5;

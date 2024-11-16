@@ -14,3 +14,7 @@ const firebaseConfig = {
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+
+// Configura la URL base para las redirecciones de autenticación
+auth.config.authDomain = import.meta.env.VITE_FIREBASE_AUTH_DOMAIN;
+auth.config.redirectUrl = `${window.location.origin}/ticket/`;
