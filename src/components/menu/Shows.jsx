@@ -1,31 +1,24 @@
 import React from 'react';
-import { Calendar, Music, Clock, Users } from 'lucide-react';
+import { Calendar, Music, Users } from 'lucide-react';
 
 const artistasData = [
     {
-        dia: "11 de Enero",
+        dia: "Jueves 2 de Enero",
         color: "#f9b603",
         artistas: [
             {
-                nombre: "Los Cantores del Alba",
-                tipo: "Folclore Tradicional"
-            },
-            {
-                nombre: "Chipote",
+                nombre: "Euge Quevedo y la LBC",
                 tipo: "Cuarteto"
             },
             {
-                nombre: "Juan Manuel \"El Ángel Tropical\"",
-                tipo: "Tropical"
+                nombre: "Los Pasioneros",
+                tipo: "Cuarteto"
             },
             {
-                nombre: "Ballets folclóricos",
-                tipo: "Danza"
+                nombre: "Simplemente Los Cantores del Alba",
+                tipo: "Folclore Tradicional"
             },
-            {
-                nombre: "Los Sanfra",
-                tipo: "Folclore"
-            },
+
             {
                 nombre: "Trío Chamamecero",
                 tipo: "Chamamé"
@@ -37,32 +30,28 @@ const artistasData = [
         ]
     },
     {
-        dia: "12 de Enero",
+        dia: "Viernes 3 de Enero",
         color: "#17b1be",
         artistas: [
+            {
+                nombre: "Chipote",
+                tipo: "Cuarteto"
+            },
             {
                 nombre: "Ceibo",
                 tipo: "Folclore"
             },
             {
-                nombre: "Luis Soloa",
-                tipo: "Solista"
-            },
-            {
-                nombre: "Euge Quevedo y La Banda de Carlitos",
-                tipo: "Cuarteto"
-            },
-            {
-                nombre: "Wakay",
+                nombre: "Los Sanfra",
                 tipo: "Folclore"
             },
             {
-                nombre: "Ballets folclóricos",
-                tipo: "Danza"
+                nombre: "Waqay",
+                tipo: "Folclore"
             },
             {
-                nombre: "Reina del Artesano",
-                tipo: "Evento Especial"
+                nombre: "Juan Manuel \"El Ángel Tropical\"",
+                tipo: "Tropical"
             }
         ]
     }
@@ -85,22 +74,22 @@ const GrillaArtistas = () => {
                 <div className="grid md:grid-cols-2 gap-8">
                     {artistasData.map((dia, index) => (
                         <div key={index} className="relative">
-                            <div 
+                            <div
                                 className="absolute inset-0 bg-gradient-to-br rounded-3xl opacity-5"
                                 style={{ backgroundColor: dia.color }}
                             />
                             <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-                                <div 
+                                <div
                                     className="h-2"
                                     style={{ backgroundColor: dia.color }}
                                 />
                                 <div className="p-6">
                                     <div className="flex items-center gap-3 mb-6">
-                                        <div 
+                                        <div
                                             className="w-12 h-12 rounded-2xl flex items-center justify-center"
                                             style={{ backgroundColor: `${dia.color}15` }}
                                         >
-                                            <Calendar 
+                                            <Calendar
                                                 className="w-6 h-6"
                                                 style={{ color: dia.color }}
                                             />
@@ -112,15 +101,15 @@ const GrillaArtistas = () => {
 
                                     <div className="space-y-4">
                                         {dia.artistas.map((artista, idx) => (
-                                            <div 
+                                            <div
                                                 key={idx}
                                                 className="group flex items-center gap-4 p-4 rounded-xl transition-all duration-300 hover:bg-gray-50"
                                             >
-                                                <div 
+                                                <div
                                                     className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
                                                     style={{ backgroundColor: `${dia.color}15` }}
                                                 >
-                                                    <Music 
+                                                    <Music
                                                         className="w-5 h-5"
                                                         style={{ color: dia.color }}
                                                     />
@@ -129,9 +118,9 @@ const GrillaArtistas = () => {
                                                     <h4 className="font-semibold text-gray-900 mb-1">
                                                         {artista.nombre}
                                                     </h4>
-                                                    <span 
+                                                    <span
                                                         className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full"
-                                                        style={{ 
+                                                        style={{
                                                             backgroundColor: `${dia.color}15`,
                                                             color: dia.color
                                                         }}

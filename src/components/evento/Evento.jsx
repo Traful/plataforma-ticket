@@ -27,8 +27,8 @@ const Evento = () => {
     const [mpInitialized, setMpInitialized] = useState(false);
 
     const PRICES = {
-        day1: 6000,
-        day2: 10000
+        day1: 15000,
+        day2: 8000
     };
 
     const MAX_TICKETS_PER_DAY = 5;
@@ -237,7 +237,7 @@ const Evento = () => {
                     <div className="h-full max-w-5xl mx-auto px-4 flex flex-col justify-end pb-6">
                         <div className="inline-flex items-center gap-2 text-[#17b1be] mb-2">
                             <HiOutlineCalendar className="w-5 h-5" />
-                            <span>11 y 12 de Enero de 2024</span>
+                            <span>2 y 3 de Enero de 2025</span>
                         </div>
                         <h1 className="text-3xl font-bold text-white">
                             36° Festival Provincial del Artesano
@@ -255,7 +255,7 @@ const Evento = () => {
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <h3 className="text-xl font-bold text-[#00263b]">11 de Enero</h3>
+                                            <h3 className="text-xl font-bold text-[#00263b]">Jueves 2 de Enero</h3>
                                             <span className="text-xs font-medium text-[#17b1be] bg-[#17b1be]/10 px-2 py-1 rounded-full">
                                                 Disponible
                                             </span>
@@ -292,7 +292,7 @@ const Evento = () => {
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <h3 className="text-xl font-bold text-[#00263b]">12 de Enero</h3>
+                                            <h3 className="text-xl font-bold text-[#00263b]">Viernes 3 de Enero</h3>
                                             <span className="text-xs font-medium text-[#17b1be] bg-[#17b1be]/10 px-2 py-1 rounded-full">
                                                 Disponible
                                             </span>
@@ -342,7 +342,7 @@ const Evento = () => {
                                         <HiOutlineClock className="w-5 h-5 text-[#17b1be]" />
                                     </div>
                                     <div>
-                                        <p className="font-medium">Desde las 18:00hs</p>
+                                        <p className="font-medium">Desde las 20:00hs</p>
                                         <p className="text-sm text-gray-400">en adelante</p>
                                     </div>
                                 </div>
@@ -357,13 +357,13 @@ const Evento = () => {
                                         </h4>
                                         {tickets.day1 > 0 && (
                                             <div className="flex justify-between text-sm mb-2">
-                                                <span className="text-gray-400">11 de Enero × {tickets.day1}</span>
+                                                <span className="text-gray-400">2 de Enero × {tickets.day1}</span>
                                                 <span>${tickets.day1 * PRICES.day1}</span>
                                             </div>
                                         )}
                                         {tickets.day2 > 0 && (
                                             <div className="flex justify-between text-sm mb-2">
-                                                <span className="text-gray-400">12 de Enero × {tickets.day2}</span>
+                                                <span className="text-gray-400">3 de Enero × {tickets.day2}</span>
                                                 <span>${tickets.day2 * PRICES.day2}</span>
                                             </div>
                                         )}
@@ -387,7 +387,7 @@ const Evento = () => {
                         <div className="h-full max-w-5xl mx-auto px-4 flex flex-col justify-end pb-6">
                             <div className="inline-flex items-center gap-2 text-[#17b1be] mb-2">
                                 <HiOutlineCalendar className="w-5 h-5" />
-                                <span>11 y 12 de Enero de 2024</span>
+                                <span>2 y 3 de Enero de 2025</span>
                             </div>
                             <h1 className="text-2xl font-bold text-white">
                                 36° Festival Provincial del Artesano
