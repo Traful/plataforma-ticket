@@ -15,7 +15,7 @@ RewriteCond %{REQUEST_URI} !^/api/
 RewriteRule ^(.*)$ index.html [L,QSA]
 
 # Prevent directory listing
-Options -Indexes
+Options -Indexes 
 
 # Set default character set
 AddDefaultCharset UTF-8
